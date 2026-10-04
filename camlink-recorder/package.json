@@ -1,0 +1,48 @@
+{
+  "name": "camlink-recorder",
+  "version": "1.0.0",
+  "description": "Tutorial screen recorder with wireless phone webcam & microphone via WebRTC",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "screen-recorder",
+    "webrtc",
+    "webcam",
+    "camlink",
+    "electron"
+  ],
+  "author": "CamLink Studio",
+  "license": "MIT",
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.3",
+    "ffmpeg-static": "^5.2.0",
+    "qrcode": "^1.5.3",
+    "selfsigned": "^2.4.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.camlink.recorder",
+    "productName": "CamLink Recorder",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
