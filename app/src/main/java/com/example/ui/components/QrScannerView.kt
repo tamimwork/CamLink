@@ -51,9 +51,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.data.model.ConnectionConfig
-import com.example.ui.theme.CyanAccent
-import com.example.ui.theme.NavyDeep
-import com.example.ui.theme.NavySurface
+import com.example.ui.theme.FixedCyanAccent
+import com.example.ui.theme.FixedNavyDeep
+import com.example.ui.theme.FixedNavySurface
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -179,7 +179,7 @@ fun QrScannerView(
 
             // Neon cyan border
             drawRoundRect(
-                color = CyanAccent,
+                color = FixedCyanAccent,
                 topLeft = Offset(left, top),
                 size = androidx.compose.ui.geometry.Size(framePx, framePx),
                 cornerRadius = CornerRadius(24.dp.toPx(), 24.dp.toPx()),
@@ -215,9 +215,9 @@ fun QrScannerView(
                         Brush.horizontalGradient(
                             listOf(
                                 Color.Transparent,
-                                CyanAccent,
+                                FixedCyanAccent,
                                 Color.White,
-                                CyanAccent,
+                                FixedCyanAccent,
                                 Color.Transparent
                             )
                         )
@@ -233,8 +233,8 @@ fun QrScannerView(
                 camera?.cameraControl?.enableTorch(next)
             },
             colors = IconButtonDefaults.filledIconButtonColors(
-                containerColor = NavySurface.copy(alpha = 0.85f),
-                contentColor = if (isTorchEnabled) CyanAccent else Color.White
+                containerColor = FixedNavySurface.copy(alpha = 0.85f),
+                contentColor = if (isTorchEnabled) FixedCyanAccent else Color.White
             ),
             modifier = Modifier
                 .align(Alignment.TopEnd)

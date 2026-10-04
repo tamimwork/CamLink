@@ -52,13 +52,13 @@ import com.example.service.StreamSessionManager
 import com.example.ui.components.BatteryThermalBadge
 import com.example.ui.components.HealthWarningBanner
 import com.example.ui.components.LiveStatusBadge
-import com.example.ui.theme.CyanAccent
-import com.example.ui.theme.CyanPrimary
-import com.example.ui.theme.NavyBorder
-import com.example.ui.theme.NavyDark
-import com.example.ui.theme.NavyDeep
-import com.example.ui.theme.NavySurface
-import com.example.ui.theme.NavySurfaceVariant
+import com.example.ui.theme.FixedCyanAccent
+import com.example.ui.theme.FixedCyanPrimary
+import com.example.ui.theme.FixedNavyBorder
+import com.example.ui.theme.FixedNavyDark
+import com.example.ui.theme.FixedNavyDeep
+import com.example.ui.theme.FixedNavySurface
+import com.example.ui.theme.FixedNavySurfaceVariant
 import com.example.webrtc.RtcConnectionStatus
 import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
@@ -236,14 +236,14 @@ fun StreamingScreen(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(CircleShape)
-                                .background(NavySurface.copy(alpha = 0.85f))
-                                .border(1.dp, NavyBorder, CircleShape)
+                                .background(FixedNavySurface.copy(alpha = 0.85f))
+                                .border(1.dp, FixedNavyBorder, CircleShape)
                                 .testTag("stats_info_button")
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Info,
                                 contentDescription = "Stream Stats",
-                                tint = CyanAccent,
+                                tint = FixedCyanAccent,
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -294,7 +294,7 @@ fun StreamingScreen(
         ModalBottomSheet(
             onDismissRequest = { showStatsSheet = false },
             sheetState = rememberModalBottomSheetState(),
-            containerColor = NavyDark,
+            containerColor = FixedNavyDark,
             contentColor = Color.White
         ) {
             Column(
@@ -330,7 +330,7 @@ private fun DiagnosticRow(label: String, value: String) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(NavySurfaceVariant.copy(alpha = 0.5f))
+            .background(FixedNavySurfaceVariant.copy(alpha = 0.5f))
             .padding(horizontal = 12.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

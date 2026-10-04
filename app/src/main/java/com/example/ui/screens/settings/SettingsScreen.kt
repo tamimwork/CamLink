@@ -1,5 +1,7 @@
 package com.example.ui.screens.settings
 
+import com.example.ui.theme.TextSecondary
+import com.example.ui.theme.TextPrimary
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -85,7 +87,7 @@ fun SettingsScreen(
                         text = "Settings",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = TextPrimary
                     )
                 },
                 navigationIcon = {
@@ -96,7 +98,7 @@ fun SettingsScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = TextPrimary
                         )
                     }
                 },
@@ -140,7 +142,7 @@ fun SettingsScreen(
                             selectedContainerColor = CyanAccent,
                             selectedLabelColor = NavyDark,
                             containerColor = NavySurfaceVariant,
-                            labelColor = Color.White
+                            labelColor = TextPrimary
                         ),
                         modifier = Modifier.testTag("settings_camera_back")
                     )
@@ -152,7 +154,7 @@ fun SettingsScreen(
                             selectedContainerColor = CyanAccent,
                             selectedLabelColor = NavyDark,
                             containerColor = NavySurfaceVariant,
-                            labelColor = Color.White
+                            labelColor = TextPrimary
                         ),
                         modifier = Modifier.testTag("settings_camera_front")
                     )
@@ -181,7 +183,7 @@ fun SettingsScreen(
                                 selectedContainerColor = CyanAccent,
                                 selectedLabelColor = NavyDark,
                                 containerColor = NavySurfaceVariant,
-                                labelColor = Color.White
+                                labelColor = TextPrimary
                             ),
                             modifier = Modifier.testTag("settings_resolution_${res.name}")
                         )
@@ -211,7 +213,7 @@ fun SettingsScreen(
                                 selectedContainerColor = CyanAccent,
                                 selectedLabelColor = NavyDark,
                                 containerColor = NavySurfaceVariant,
-                                labelColor = Color.White
+                                labelColor = TextPrimary
                             ),
                             modifier = Modifier.testTag("settings_fps_${fpsOption.fps}")
                         )
@@ -276,7 +278,7 @@ fun SettingsScreen(
                                 selectedContainerColor = CyanAccent,
                                 selectedLabelColor = NavyDark,
                                 containerColor = NavySurfaceVariant,
-                                labelColor = Color.White
+                                labelColor = TextPrimary
                             ),
                             modifier = Modifier.testTag("settings_theme_$themeKey")
                         )
@@ -302,14 +304,14 @@ fun SettingsScreen(
                         text = "Signaling & QR Format",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = TextPrimary
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = "CamLink connects to the PC over WebSocket (WSS/WS) and initiates WebRTC streaming using hardware H.264/VP8 encoding and high-fidelity Opus audio.",
                     fontSize = 12.sp,
-                    color = Color(0xFF94A3B8),
+                    color = TextSecondary,
                     lineHeight = 16.sp
                 )
                 Spacer(modifier = Modifier.height(6.dp))
@@ -383,12 +385,12 @@ private fun SettingsRowHeader(
                 text = title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = TextPrimary
             )
             Text(
                 text = subtitle,
                 fontSize = 11.sp,
-                color = Color(0xFF94A3B8)
+                color = TextSecondary
             )
         }
     }
@@ -437,12 +439,12 @@ private fun SettingsToggleRow(
                     text = title,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = TextPrimary
                 )
                 Text(
                     text = subtitle,
                     fontSize = 11.sp,
-                    color = Color(0xFF94A3B8)
+                    color = TextSecondary
                 )
             }
         }

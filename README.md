@@ -3,7 +3,7 @@
 > **Record PC tutorials with your own face, no webcam needed.**
 > CamLink turns your Android phone into a wireless webcam + microphone for a PC screen recorder, over your own Wi-Fi.
 
-**Created by [MD Saiful Islam Tamim](https://github.com/)** &nbsp;|&nbsp; Android (Kotlin) &nbsp;|&nbsp; Electron (PC) &nbsp;|&nbsp; WebRTC
+**Created by [MD Saiful Islam Tamim](https://github.com/tamimwork)** &nbsp;|&nbsp; Android (Kotlin) &nbsp;|&nbsp; Electron (PC) &nbsp;|&nbsp; WebRTC
 
 ---
 
@@ -14,6 +14,19 @@ Many creators want to make **PC tutorials**, but they have **no webcam and no mi
 **CamLink fixes that.** Open the recorder on your PC, scan a QR code with your phone, and the phone becomes a **wireless webcam + mic**. The recorder places your face as a **movable bubble on top of your screen** and saves everything in **one video file**.
 
 Think of it as *Loom + DroidCam*, built for tutorial makers. It runs fully on your own **Wi-Fi**: no cloud, no account, no internet needed.
+
+---
+
+## ⬇️ Download
+
+Get the latest builds from the **[Releases](../../releases/latest)** page:
+
+| Platform | File |
+|---|---|
+| 📱 Android | `CamLink-Android-*.apk` (allow *Install unknown apps*) |
+| 💻 Windows | `CamLink-Recorder-Setup-*.exe` (installer) or `CamLink-Recorder-Portable-*.exe` |
+
+> Windows SmartScreen may warn because the app is not code-signed. Click **More info, then Run anyway**.
 
 ---
 
@@ -38,6 +51,7 @@ Think of it as *Loom + DroidCam*, built for tutorial makers. It runs fully on yo
 | 🔋 | **Battery + heat guard** | Warnings when the battery is low or the phone gets hot |
 | 🛡️ | **Background streaming** | Foreground service keeps camera + mic alive with the screen off |
 | 🎨 | **Studio UI** | Navy + cyan theme, pulsing **LIVE** badge, session timer, animated onboarding |
+| 🌗 | **Dark + light theme** | Switch in Settings, or follow the phone's system theme |
 
 ## 💻 PC Recorder
 
@@ -51,7 +65,7 @@ Think of it as *Loom + DroidCam*, built for tutorial makers. It runs fully on yo
 | 💾 | **Safe for long videos** | Recording is written to disk while you record, so long tutorials do not eat your RAM |
 | ⌨️ | **Global hotkeys** | `Ctrl + Shift + R` start / stop, `Ctrl + Shift + P` pause / resume |
 | 📊 | **Live diagnostics** | Latency, incoming resolution and FPS |
-| 🌙 | **Dark UI** | Navy + cyan design with an emerald LIVE indicator |
+| 🌗 | **Dark + light theme** | One-click toggle in the sidebar, follows Windows by default |
 
 ---
 
@@ -71,7 +85,7 @@ camlink/
 │   ├── server.js           secure WebSocket signaling server
 │   └── renderer/           UI, compositor, audio mixer, recorder
 ├── docs/                   README graphics
-├── .github/workflows/      GitHub Actions: builds the APK automatically
+├── .github/workflows/      GitHub Actions: APK build + release (APK and .exe)
 └── README.md
 ```
 
@@ -111,6 +125,15 @@ npm start
 cd camlink-recorder
 npm run dist
 ```
+
+### 🚀 Publish a new release (APK + .exe automatically)
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+GitHub Actions builds the APK and the Windows installer, then publishes both on the **Releases** page.
 
 ---
 

@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.classList.add('active');
       const color = btn.dataset.color;
       compositor.setBorderColor(color);
-      interactiveBubble.style.borderColor = color === 'transparent' ? '#334155' : color;
+      interactiveBubble.style.borderColor = color === 'transparent' ? 'var(--border-strong)' : color;
     });
   });
 
@@ -353,12 +353,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   btnPhoneMute.addEventListener('click', () => {
     const muted = audioMixer.togglePhoneMute();
-    btnPhoneMute.style.color = muted ? '#F43F5E' : '#94A3B8';
+    btnPhoneMute.style.color = muted ? 'var(--danger)' : 'var(--muted)';
   });
 
   btnSystemMute.addEventListener('click', () => {
     const muted = audioMixer.toggleSystemMute();
-    btnSystemMute.style.color = muted ? '#F43F5E' : '#94A3B8';
+    btnSystemMute.style.color = muted ? 'var(--danger)' : 'var(--muted)';
   });
 
   // Output Resolution & FPS

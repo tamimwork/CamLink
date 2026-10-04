@@ -64,14 +64,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.StreamFps
 import com.example.data.model.StreamResolution
-import com.example.ui.theme.AmberWarning
-import com.example.ui.theme.CyanAccent
-import com.example.ui.theme.CyanPrimary
-import com.example.ui.theme.NavyBorder
-import com.example.ui.theme.NavyDark
-import com.example.ui.theme.NavySurface
-import com.example.ui.theme.NavySurfaceVariant
-import com.example.ui.theme.RoseDanger
+import com.example.ui.theme.FixedAmberWarning
+import com.example.ui.theme.FixedCyanAccent
+import com.example.ui.theme.FixedCyanPrimary
+import com.example.ui.theme.FixedNavyBorder
+import com.example.ui.theme.FixedNavyDark
+import com.example.ui.theme.FixedNavySurface
+import com.example.ui.theme.FixedNavySurfaceVariant
+import com.example.ui.theme.FixedRoseDanger
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,8 +119,8 @@ fun StreamingControlDock(
             Row(
                 modifier = Modifier
                     .fillMaxWidth(0.92f)
-                    .background(NavySurface.copy(alpha = 0.95f), RoundedCornerShape(20.dp))
-                    .border(1.dp, NavyBorder, RoundedCornerShape(20.dp))
+                    .background(FixedNavySurface.copy(alpha = 0.95f), RoundedCornerShape(20.dp))
+                    .border(1.dp, FixedNavyBorder, RoundedCornerShape(20.dp))
                     .padding(horizontal = 16.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -128,7 +128,7 @@ fun StreamingControlDock(
                 Icon(
                     imageVector = Icons.Default.ZoomIn,
                     contentDescription = null,
-                    tint = CyanAccent,
+                    tint = FixedCyanAccent,
                     modifier = Modifier.size(20.dp)
                 )
 
@@ -137,9 +137,9 @@ fun StreamingControlDock(
                     onValueChange = onZoomChange,
                     valueRange = 1.0f..5.0f,
                     colors = SliderDefaults.colors(
-                        thumbColor = CyanAccent,
-                        activeTrackColor = CyanPrimary,
-                        inactiveTrackColor = NavySurfaceVariant
+                        thumbColor = FixedCyanAccent,
+                        activeTrackColor = FixedCyanPrimary,
+                        inactiveTrackColor = FixedNavySurfaceVariant
                     ),
                     modifier = Modifier
                         .weight(1f)
@@ -158,7 +158,7 @@ fun StreamingControlDock(
                 if (currentZoom > 1.05f) {
                     Text(
                         text = "1x",
-                        color = CyanAccent,
+                        color = FixedCyanAccent,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier
@@ -172,8 +172,8 @@ fun StreamingControlDock(
         // Secondary Picture Control Row (AF Lock, AE/AWB Lock, Zoom Toggle)
         Row(
             modifier = Modifier
-                .background(NavySurface.copy(alpha = 0.88f), RoundedCornerShape(20.dp))
-                .border(1.dp, NavyBorder, RoundedCornerShape(20.dp))
+                .background(FixedNavySurface.copy(alpha = 0.88f), RoundedCornerShape(20.dp))
+                .border(1.dp, FixedNavyBorder, RoundedCornerShape(20.dp))
                 .padding(horizontal = 12.dp, vertical = 5.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -182,7 +182,7 @@ fun StreamingControlDock(
             QualityToggleChip(
                 label = if (isAfLocked) "AF Locked" else "AF Auto",
                 active = isAfLocked,
-                activeColor = AmberWarning,
+                activeColor = FixedAmberWarning,
                 icon = if (isAfLocked) Icons.Default.Lock else Icons.Default.CenterFocusStrong,
                 testTag = "toggle_af_lock_button",
                 onClick = onToggleAutoFocusLock
@@ -192,7 +192,7 @@ fun StreamingControlDock(
             QualityToggleChip(
                 label = if (isAeAwbLocked) "AE/AWB Locked" else "AE Auto",
                 active = isAeAwbLocked,
-                activeColor = AmberWarning,
+                activeColor = FixedAmberWarning,
                 icon = if (isAeAwbLocked) Icons.Default.Lock else Icons.Default.LockOpen,
                 testTag = "toggle_ae_lock_button",
                 onClick = onToggleExposureAwbLock
@@ -202,7 +202,7 @@ fun StreamingControlDock(
             QualityToggleChip(
                 label = String.format(Locale.US, "%.1fx", currentZoom),
                 active = showZoomSlider || currentZoom > 1.05f,
-                activeColor = CyanAccent,
+                activeColor = FixedCyanAccent,
                 icon = Icons.Default.ZoomIn,
                 testTag = "toggle_zoom_slider_button",
                 onClick = { showZoomSlider = !showZoomSlider }
@@ -212,8 +212,8 @@ fun StreamingControlDock(
         // Primary Control Dock
         Row(
             modifier = Modifier
-                .background(NavySurface.copy(alpha = 0.94f), RoundedCornerShape(32.dp))
-                .border(1.dp, NavyBorder, RoundedCornerShape(32.dp))
+                .background(FixedNavySurface.copy(alpha = 0.94f), RoundedCornerShape(32.dp))
+                .border(1.dp, FixedNavyBorder, RoundedCornerShape(32.dp))
                 .padding(horizontal = 14.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -223,7 +223,7 @@ fun StreamingControlDock(
                 icon = Icons.Default.Cameraswitch,
                 contentDescription = "Switch Camera",
                 active = isFrontCamera,
-                activeColor = CyanAccent,
+                activeColor = FixedCyanAccent,
                 testTag = "switch_camera_button",
                 onClick = onSwitchCamera
             )
@@ -234,7 +234,7 @@ fun StreamingControlDock(
                     icon = if (isTorchOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
                     contentDescription = "Torch",
                     active = isTorchOn,
-                    activeColor = AmberWarning,
+                    activeColor = FixedAmberWarning,
                     testTag = "torch_stream_button",
                     onClick = onToggleTorch
                 )
@@ -245,7 +245,7 @@ fun StreamingControlDock(
                 icon = if (isMicMuted) Icons.Default.MicOff else Icons.Default.Mic,
                 contentDescription = if (isMicMuted) "Unmute Microphone" else "Mute Microphone",
                 active = isMicMuted,
-                activeColor = RoseDanger,
+                activeColor = FixedRoseDanger,
                 testTag = "mute_mic_button",
                 onClick = onToggleMute
             )
@@ -255,7 +255,7 @@ fun StreamingControlDock(
                 icon = if (isVideoPaused) Icons.Default.VideocamOff else Icons.Default.Videocam,
                 contentDescription = if (isVideoPaused) "Resume Video" else "Pause Video",
                 active = isVideoPaused,
-                activeColor = RoseDanger,
+                activeColor = FixedRoseDanger,
                 testTag = "pause_video_button",
                 onClick = onToggleVideo
             )
@@ -265,7 +265,7 @@ fun StreamingControlDock(
                 icon = Icons.Default.Flip,
                 contentDescription = "Mirror Video",
                 active = isMirrored,
-                activeColor = CyanAccent,
+                activeColor = FixedCyanAccent,
                 testTag = "mirror_video_button",
                 onClick = onToggleMirror
             )
@@ -284,7 +284,7 @@ fun StreamingControlDock(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(RoseDanger)
+                    .background(FixedRoseDanger)
                     .clickable { showStopConfirmDialog = true }
                     .testTag("stop_streaming_button"),
                 contentAlignment = Alignment.Center
@@ -304,7 +304,7 @@ fun StreamingControlDock(
         ModalBottomSheet(
             onDismissRequest = { showQualitySheet = false },
             sheetState = rememberModalBottomSheetState(),
-            containerColor = NavyDark,
+            containerColor = FixedNavyDark,
             contentColor = Color.White
         ) {
             Column(
@@ -335,9 +335,9 @@ fun StreamingControlDock(
                             onClick = { onChangeQuality(res, currentFps) },
                             label = { Text(res.label) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = CyanAccent,
-                                selectedLabelColor = NavyDark,
-                                containerColor = NavySurfaceVariant,
+                                selectedContainerColor = FixedCyanAccent,
+                                selectedLabelColor = FixedNavyDark,
+                                containerColor = FixedNavySurfaceVariant,
                                 labelColor = Color.White
                             )
                         )
@@ -359,9 +359,9 @@ fun StreamingControlDock(
                             onClick = { onChangeQuality(currentResolution, fpsOption) },
                             label = { Text(fpsOption.label) },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = CyanAccent,
-                                selectedLabelColor = NavyDark,
-                                containerColor = NavySurfaceVariant,
+                                selectedContainerColor = FixedCyanAccent,
+                                selectedLabelColor = FixedNavyDark,
+                                containerColor = FixedNavySurfaceVariant,
                                 labelColor = Color.White
                             )
                         )
@@ -372,7 +372,7 @@ fun StreamingControlDock(
                     onClick = { showQualitySheet = false },
                     modifier = Modifier.align(Alignment.End)
                 ) {
-                    Text("Done", color = CyanPrimary)
+                    Text("Done", color = FixedCyanPrimary)
                 }
             }
         }
@@ -382,7 +382,7 @@ fun StreamingControlDock(
     if (showStopConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showStopConfirmDialog = false },
-            containerColor = NavySurface,
+            containerColor = FixedNavySurface,
             title = {
                 Text(text = "Stop Recording Stream?", color = Color.White, fontWeight = FontWeight.Bold)
             },
@@ -398,7 +398,7 @@ fun StreamingControlDock(
                         showStopConfirmDialog = false
                         onStopStreaming()
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = RoseDanger)
+                    colors = ButtonDefaults.textButtonColors(contentColor = FixedRoseDanger)
                 ) {
                     Text("Disconnect")
                 }
@@ -427,7 +427,7 @@ private fun QualityToggleChip(
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(if (active) activeColor.copy(alpha = 0.2f) else NavySurfaceVariant)
+            .background(if (active) activeColor.copy(alpha = 0.2f) else FixedNavySurfaceVariant)
             .border(1.dp, if (active) activeColor.copy(alpha = 0.7f) else Color.Transparent, RoundedCornerShape(12.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 8.dp, vertical = 4.dp)
@@ -455,11 +455,11 @@ private fun ControlButton(
     icon: ImageVector,
     contentDescription: String,
     active: Boolean,
-    activeColor: Color = CyanAccent,
+    activeColor: Color = FixedCyanAccent,
     testTag: String,
     onClick: () -> Unit
 ) {
-    val bg = if (active) activeColor.copy(alpha = 0.2f) else NavySurfaceVariant
+    val bg = if (active) activeColor.copy(alpha = 0.2f) else FixedNavySurfaceVariant
     val tint = if (active) activeColor else Color.White
 
     Box(

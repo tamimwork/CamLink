@@ -27,12 +27,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.theme.AmberWarning
-import com.example.ui.theme.CyanAccent
-import com.example.ui.theme.EmeraldLive
-import com.example.ui.theme.NavyBorder
-import com.example.ui.theme.NavySurface
-import com.example.ui.theme.RoseDanger
+import com.example.ui.theme.FixedAmberWarning
+import com.example.ui.theme.FixedCyanAccent
+import com.example.ui.theme.FixedEmeraldLive
+import com.example.ui.theme.FixedNavyBorder
+import com.example.ui.theme.FixedNavySurface
+import com.example.ui.theme.FixedRoseDanger
 import com.example.webrtc.RtcConnectionStatus
 import java.util.Locale
 
@@ -54,11 +54,11 @@ fun LiveStatusBadge(
     )
 
     val (badgeBg, dotColor, labelText) = when (status) {
-        RtcConnectionStatus.CONNECTED -> Triple(Color(0xE60C1F17), EmeraldLive, "LIVE")
-        RtcConnectionStatus.CONNECTING -> Triple(Color(0xE61F1A0C), AmberWarning, "CONNECTING")
-        RtcConnectionStatus.RECONNECTING -> Triple(Color(0xE61F1A0C), AmberWarning, "RETRYING")
-        RtcConnectionStatus.FAILED -> Triple(Color(0xE6260D14), RoseDanger, "FAILED")
-        RtcConnectionStatus.DISCONNECTED -> Triple(NavySurface.copy(alpha = 0.9f), Color.Gray, "OFFLINE")
+        RtcConnectionStatus.CONNECTED -> Triple(Color(0xE60C1F17), FixedEmeraldLive, "LIVE")
+        RtcConnectionStatus.CONNECTING -> Triple(Color(0xE61F1A0C), FixedAmberWarning, "CONNECTING")
+        RtcConnectionStatus.RECONNECTING -> Triple(Color(0xE61F1A0C), FixedAmberWarning, "RETRYING")
+        RtcConnectionStatus.FAILED -> Triple(Color(0xE6260D14), FixedRoseDanger, "FAILED")
+        RtcConnectionStatus.DISCONNECTED -> Triple(FixedNavySurface.copy(alpha = 0.9f), Color.Gray, "OFFLINE")
     }
 
     Row(
@@ -88,7 +88,7 @@ fun LiveStatusBadge(
             Box(
                 modifier = Modifier
                     .size(width = 1.dp, height = 12.dp)
-                    .background(NavyBorder)
+                    .background(FixedNavyBorder)
             )
 
             val hours = durationSeconds / 3600

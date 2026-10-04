@@ -1,5 +1,7 @@
 package com.example.ui.screens.onboarding
 
+import com.example.ui.theme.TextSecondary
+import com.example.ui.theme.TextPrimary
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -149,7 +151,7 @@ fun OnboardingScreen(
                     }
                     Text(
                         text = "CamLink Studio",
-                        color = Color.White,
+                        color = TextPrimary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -163,7 +165,7 @@ fun OnboardingScreen(
                             }
                         }
                     ) {
-                        Text("Skip", color = Color(0xFF94A3B8), fontSize = 13.sp)
+                        Text("Skip", color = TextSecondary, fontSize = 13.sp)
                     }
                 } else {
                     Spacer(modifier = Modifier.width(48.dp))
@@ -298,7 +300,7 @@ private fun TutorialSlideOne() {
             text = "Studio Tutorial Camera",
             fontSize = 24.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = Color.White,
+            color = TextPrimary,
             textAlign = TextAlign.Center
         )
 
@@ -307,7 +309,7 @@ private fun TutorialSlideOne() {
         Text(
             text = "No webcam or microphone on your PC? Turn your Android smartphone into a studio 1080p 60FPS video camera and crystal-clear microphone.",
             fontSize = 14.sp,
-            color = Color(0xFF94A3B8),
+            color = TextSecondary,
             textAlign = TextAlign.Center,
             lineHeight = 20.sp,
             modifier = Modifier.padding(horizontal = 12.dp)
@@ -347,7 +349,7 @@ private fun TutorialSlideTwo() {
             text = "Instant 1-Scan Pairing",
             fontSize = 24.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = Color.White,
+            color = TextPrimary,
             textAlign = TextAlign.Center
         )
 
@@ -356,7 +358,7 @@ private fun TutorialSlideTwo() {
         Text(
             text = "Connect over the same local Wi-Fi. Just point your phone at the QR code displayed in the PC Screen Recorder to pair with zero latency.",
             fontSize = 14.sp,
-            color = Color(0xFF94A3B8),
+            color = TextSecondary,
             textAlign = TextAlign.Center,
             lineHeight = 20.sp,
             modifier = Modifier.padding(horizontal = 12.dp)
@@ -382,7 +384,7 @@ private fun PermissionsSlide(
             text = "Camera & Audio Access",
             fontSize = 24.sp,
             fontWeight = FontWeight.ExtraBold,
-            color = Color.White,
+            color = TextPrimary,
             textAlign = TextAlign.Center
         )
 
@@ -391,7 +393,7 @@ private fun PermissionsSlide(
         Text(
             text = "Grant permissions so CamLink can capture live video and studio audio for your PC tutorial screen recorder.",
             fontSize = 14.sp,
-            color = Color(0xFF94A3B8),
+            color = TextSecondary,
             textAlign = TextAlign.Center,
             lineHeight = 20.sp,
             modifier = Modifier.padding(horizontal = 12.dp)
@@ -469,12 +471,12 @@ private fun PermissionRowItem(
                 text = title,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White
+                color = TextPrimary
             )
             Text(
                 text = description,
                 fontSize = 12.sp,
-                color = Color(0xFF94A3B8)
+                color = TextSecondary
             )
         }
     }

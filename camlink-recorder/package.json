@@ -15,7 +15,7 @@
     "camlink",
     "electron"
   ],
-  "author": "CamLink Studio",
+  "author": "MD Saiful Islam Tamim",
   "license": "MIT",
   "dependencies": {
     "fluent-ffmpeg": "^2.1.3",
@@ -31,10 +31,23 @@
   "build": {
     "appId": "com.camlink.recorder",
     "productName": "CamLink Recorder",
+    "copyright": "Copyright (c) MD Saiful Islam Tamim",
     "directories": {
       "output": "dist"
     },
+    "files": [
+      "main.js",
+      "preload.js",
+      "server.js",
+      "renderer/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/ffmpeg-static/**"
+    ],
     "win": {
+      "icon": "assets/icon.ico",
       "target": [
         "nsis",
         "portable"
@@ -42,7 +55,17 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CamLink Recorder",
+      "artifactName": "CamLink-Recorder-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "CamLink-Recorder-Portable-${version}.${ext}"
     }
   }
 }

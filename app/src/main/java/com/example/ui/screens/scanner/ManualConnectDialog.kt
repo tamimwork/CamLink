@@ -1,5 +1,7 @@
 package com.example.ui.screens.scanner
 
+import com.example.ui.theme.TextSecondary
+import com.example.ui.theme.TextPrimary
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -60,7 +62,7 @@ fun ManualConnectDialog(
                 text = "Manual PC Connection",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = TextPrimary
             )
         },
         text = {
@@ -71,7 +73,7 @@ fun ManualConnectDialog(
                 Text(
                     text = "Enter the IP and Port displayed in your PC Screen Recorder app.",
                     fontSize = 13.sp,
-                    color = Color(0xFF94A3B8)
+                    color = TextSecondary
                 )
 
                 // IP Address
@@ -88,8 +90,8 @@ fun ManualConnectDialog(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = CyanAccent,
                         unfocusedBorderColor = NavyBorder,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
                         focusedContainerColor = NavySurfaceVariant,
                         unfocusedContainerColor = NavySurfaceVariant
                     ),
@@ -113,8 +115,8 @@ fun ManualConnectDialog(
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = CyanAccent,
                             unfocusedBorderColor = NavyBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
                             focusedContainerColor = NavySurfaceVariant,
                             unfocusedContainerColor = NavySurfaceVariant
                         ),
@@ -132,8 +134,8 @@ fun ManualConnectDialog(
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = CyanAccent,
                             unfocusedBorderColor = NavyBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
                             focusedContainerColor = NavySurfaceVariant,
                             unfocusedContainerColor = NavySurfaceVariant
                         ),
@@ -152,13 +154,13 @@ fun ManualConnectDialog(
                     Column {
                         Text(
                             text = "Use Secure WSS (TLS)",
-                            color = Color.White,
+                            color = TextPrimary,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
                             text = "Self-signed LAN certificates trusted",
-                            color = Color(0xFF94A3B8),
+                            color = TextSecondary,
                             fontSize = 11.sp
                         )
                     }
@@ -212,7 +214,7 @@ fun ManualConnectDialog(
         dismissButton = {
             TextButton(
                 onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF94A3B8))
+                colors = ButtonDefaults.textButtonColors(contentColor = TextSecondary)
             ) {
                 Text("Cancel")
             }

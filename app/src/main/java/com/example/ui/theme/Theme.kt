@@ -12,27 +12,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = CyanPrimary,
-    onPrimary = NavyDeep,
-    primaryContainer = NavySurfaceVariant,
-    onPrimaryContainer = CyanAccent,
-    secondary = CyanAccent,
-    onSecondary = NavyDeep,
-    secondaryContainer = NavySurface,
-    onSecondaryContainer = TextPrimary,
-    tertiary = EmeraldLive,
+    primary = FixedCyanPrimary,
+    onPrimary = FixedNavyDeep,
+    primaryContainer = FixedNavySurfaceVariant,
+    onPrimaryContainer = FixedCyanAccent,
+    secondary = FixedCyanAccent,
+    onSecondary = FixedNavyDeep,
+    secondaryContainer = FixedNavySurface,
+    onSecondaryContainer = FixedTextPrimary,
+    tertiary = FixedEmeraldLive,
     onTertiary = Color.White,
-    tertiaryContainer = NavySurfaceVariant,
-    onTertiaryContainer = EmeraldLive,
-    background = NavyDeep,
-    onBackground = TextPrimary,
-    surface = NavyDark,
-    onSurface = TextPrimary,
-    surfaceVariant = NavySurface,
-    onSurfaceVariant = TextSecondary,
-    outline = NavyBorder,
-    outlineVariant = NavySurfaceVariant,
-    error = RoseDanger,
+    tertiaryContainer = FixedNavySurfaceVariant,
+    onTertiaryContainer = FixedEmeraldLive,
+    background = FixedNavyDeep,
+    onBackground = FixedTextPrimary,
+    surface = FixedNavyDark,
+    onSurface = FixedTextPrimary,
+    surfaceVariant = FixedNavySurface,
+    onSurfaceVariant = FixedTextSecondary,
+    outline = FixedNavyBorder,
+    outlineVariant = FixedNavySurfaceVariant,
+    error = FixedRoseDanger,
     onError = Color.White
 )
 
@@ -45,7 +45,7 @@ private val LightColorScheme = lightColorScheme(
     onSecondary = Color.White,
     secondaryContainer = Color(0xFFF0F9FF),
     onSecondaryContainer = Color(0xFF0C4A6E),
-    tertiary = EmeraldLive,
+    tertiary = Color(0xFF059669),
     onTertiary = Color.White,
     background = LightBackground,
     onBackground = LightTextPrimary,
@@ -54,7 +54,7 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = LightSurfaceVariant,
     onSurfaceVariant = LightTextSecondary,
     outline = LightBorder,
-    error = RoseDanger,
+    error = Color(0xFFE11D48),
     onError = Color.White
 )
 
@@ -64,6 +64,8 @@ fun MyApplicationTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    CamLinkPalette.isDark = darkTheme
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current

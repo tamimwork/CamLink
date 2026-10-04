@@ -30,11 +30,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.DeviceHealthState
-import com.example.ui.theme.AmberWarning
-import com.example.ui.theme.EmeraldLive
-import com.example.ui.theme.NavyBorder
-import com.example.ui.theme.NavySurface
-import com.example.ui.theme.RoseDanger
+import com.example.ui.theme.FixedAmberWarning
+import com.example.ui.theme.FixedEmeraldLive
+import com.example.ui.theme.FixedNavyBorder
+import com.example.ui.theme.FixedNavySurface
+import com.example.ui.theme.FixedRoseDanger
 
 @Composable
 fun BatteryThermalBadge(
@@ -42,21 +42,21 @@ fun BatteryThermalBadge(
     modifier: Modifier = Modifier
 ) {
     val batteryColor = when {
-        health.batteryLevel <= 20 -> RoseDanger
-        health.batteryLevel <= 40 -> AmberWarning
-        else -> EmeraldLive
+        health.batteryLevel <= 20 -> FixedRoseDanger
+        health.batteryLevel <= 40 -> FixedAmberWarning
+        else -> FixedEmeraldLive
     }
 
     val tempColor = when {
-        health.batteryTempCelsius >= 42.0f -> RoseDanger
-        health.batteryTempCelsius >= 38.0f -> AmberWarning
+        health.batteryTempCelsius >= 42.0f -> FixedRoseDanger
+        health.batteryTempCelsius >= 38.0f -> FixedAmberWarning
         else -> Color(0xFF94A3B8)
     }
 
     Row(
         modifier = modifier
-            .background(NavySurface.copy(alpha = 0.85f), RoundedCornerShape(20.dp))
-            .border(1.dp, NavyBorder, RoundedCornerShape(20.dp))
+            .background(FixedNavySurface.copy(alpha = 0.85f), RoundedCornerShape(20.dp))
+            .border(1.dp, FixedNavyBorder, RoundedCornerShape(20.dp))
             .padding(horizontal = 10.dp, vertical = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -83,7 +83,7 @@ fun BatteryThermalBadge(
         Box(
             modifier = Modifier
                 .size(width = 1.dp, height = 12.dp)
-                .background(NavyBorder)
+                .background(FixedNavyBorder)
         )
 
         // Temperature
@@ -118,7 +118,7 @@ fun HealthWarningBanner(
                 modifier = modifier
                     .fillMaxWidth()
                     .background(Color(0xE62B1705), RoundedCornerShape(12.dp))
-                    .border(1.dp, AmberWarning.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
+                    .border(1.dp, FixedAmberWarning.copy(alpha = 0.6f), RoundedCornerShape(12.dp))
                     .padding(horizontal = 14.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -126,7 +126,7 @@ fun HealthWarningBanner(
                 Icon(
                     imageVector = Icons.Default.Warning,
                     contentDescription = "Warning",
-                    tint = AmberWarning,
+                    tint = FixedAmberWarning,
                     modifier = Modifier.size(20.dp)
                 )
                 Text(

@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.ConnectionConfig
 import com.example.ui.components.QrScannerView
-import com.example.ui.theme.CyanAccent
-import com.example.ui.theme.NavyDark
-import com.example.ui.theme.NavyDeep
-import com.example.ui.theme.NavySurface
+import com.example.ui.theme.FixedCyanAccent
+import com.example.ui.theme.FixedNavyDark
+import com.example.ui.theme.FixedNavyDeep
+import com.example.ui.theme.FixedNavySurface
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,7 +58,7 @@ fun ScannerScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = NavyDeep,
+        containerColor = FixedNavyDeep,
         topBar = {
             TopAppBar(
                 title = {
@@ -109,7 +109,7 @@ fun ScannerScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .background(NavySurface.copy(alpha = 0.9f), RoundedCornerShape(16.dp))
+                        .background(FixedNavySurface.copy(alpha = 0.9f), RoundedCornerShape(16.dp))
                         .padding(horizontal = 18.dp, vertical = 12.dp)
                 ) {
                     Text(
@@ -125,8 +125,8 @@ fun ScannerScreen(
                     onClick = { showManualDialog = true },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = NavySurface.copy(alpha = 0.9f),
-                        contentColor = CyanAccent
+                        containerColor = FixedNavySurface.copy(alpha = 0.9f),
+                        contentColor = FixedCyanAccent
                     ),
                     modifier = Modifier.testTag("scanner_manual_entry_button")
                 ) {

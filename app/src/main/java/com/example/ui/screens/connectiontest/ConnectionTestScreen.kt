@@ -1,5 +1,7 @@
 package com.example.ui.screens.connectiontest
 
+import com.example.ui.theme.TextSecondary
+import com.example.ui.theme.TextPrimary
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -116,7 +118,7 @@ fun ConnectionTestScreen(
                         text = "Connection & Speed Test",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = TextPrimary
                     )
                 },
                 navigationIcon = {
@@ -127,7 +129,7 @@ fun ConnectionTestScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White
+                            tint = TextPrimary
                         )
                     }
                 },
@@ -179,8 +181,8 @@ fun ConnectionTestScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = CyanAccent,
                             unfocusedBorderColor = NavyBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
                             focusedContainerColor = NavySurfaceVariant,
                             unfocusedContainerColor = NavySurfaceVariant
                         ),
@@ -201,8 +203,8 @@ fun ConnectionTestScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = CyanAccent,
                             unfocusedBorderColor = NavyBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
                             focusedContainerColor = NavySurfaceVariant,
                             unfocusedContainerColor = NavySurfaceVariant
                         ),
@@ -316,13 +318,13 @@ fun ConnectionTestScreen(
                                 text = if (result.isSuccess) "${result.avgLatencyMs}" else "--",
                                 fontSize = 38.sp,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = Color.White,
+                                color = TextPrimary,
                                 fontFamily = FontFamily.Monospace
                             )
                             Text(
                                 text = "ms latency",
                                 fontSize = 12.sp,
-                                color = Color(0xFF94A3B8)
+                                color = TextSecondary
                             )
                         }
                     }
@@ -358,7 +360,7 @@ fun ConnectionTestScreen(
                         Text(
                             text = "Tap 'Run Network Diagnostic' to test PC link speed",
                             fontSize = 12.sp,
-                            color = Color(0xFF94A3B8),
+                            color = TextSecondary,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -487,14 +489,14 @@ private fun MetricCard(
             Text(
                 text = label,
                 fontSize = 12.sp,
-                color = Color(0xFF94A3B8)
+                color = TextSecondary
             )
         }
         Text(
             text = value,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = TextPrimary,
             fontFamily = FontFamily.Monospace
         )
     }

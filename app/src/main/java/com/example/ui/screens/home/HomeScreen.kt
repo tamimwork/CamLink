@@ -1,5 +1,7 @@
 package com.example.ui.screens.home
 
+import com.example.ui.theme.TextSecondary
+import com.example.ui.theme.TextPrimary
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -147,12 +149,12 @@ fun HomeScreen(
                                 text = "CamLink",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = TextPrimary
                             )
                             Text(
                                 text = "Wireless PC Webcam & Mic",
                                 fontSize = 11.sp,
-                                color = Color(0xFF94A3B8)
+                                color = TextSecondary
                             )
                         }
                     }
@@ -175,7 +177,7 @@ fun HomeScreen(
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings",
-                            tint = Color.White
+                            tint = TextPrimary
                         )
                     }
                 },
@@ -226,12 +228,12 @@ fun HomeScreen(
                         text = networkInfo.wifiName,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White
+                        color = TextPrimary
                     )
                     Text(
                         text = "Phone IP: ${networkInfo.localIpAddress}",
                         fontSize = 12.sp,
-                        color = Color(0xFF94A3B8)
+                        color = TextSecondary
                     )
                 }
 
@@ -353,12 +355,12 @@ fun HomeScreen(
                                     text = "Remembered PC",
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = TextPrimary
                                 )
                                 Text(
                                     text = "${lastConnection.first}:${lastConnection.second}",
                                     fontSize = 11.sp,
-                                    color = Color(0xFF94A3B8)
+                                    color = TextSecondary
                                 )
                             }
                         }
@@ -404,7 +406,7 @@ fun HomeScreen(
                     onClick = { showManualDialog = true },
                     shape = RoundedCornerShape(12.dp),
                     border = androidx.compose.foundation.BorderStroke(1.dp, NavyBorder),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary),
                     modifier = Modifier
                         .weight(1f)
                         .height(46.dp)
@@ -428,7 +430,7 @@ fun HomeScreen(
                     onClick = onNavigateToConnectionTest,
                     shape = RoundedCornerShape(12.dp),
                     border = androidx.compose.foundation.BorderStroke(1.dp, NavyBorder),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = TextPrimary),
                     modifier = Modifier
                         .weight(1f)
                         .height(46.dp)
@@ -475,7 +477,7 @@ fun HomeScreen(
                         text = "Quick Studio Guide",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = TextPrimary
                     )
                 }
 
@@ -523,7 +525,7 @@ fun HomeScreen(
                 Text(
                     text = "Reconnect to PC",
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = TextPrimary
                 )
             },
             text = {
@@ -536,7 +538,7 @@ fun HomeScreen(
                     )
                     Text(
                         text = "Please enter the pairing code currently displayed on your PC screen:",
-                        color = Color(0xFF94A3B8),
+                        color = TextSecondary,
                         fontSize = 12.sp
                     )
                     OutlinedTextField(
@@ -551,8 +553,8 @@ fun HomeScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = CyanAccent,
                             unfocusedBorderColor = NavyBorder,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
                             focusedContainerColor = NavySurfaceVariant,
                             unfocusedContainerColor = NavySurfaceVariant
                         ),
@@ -596,7 +598,7 @@ fun HomeScreen(
             dismissButton = {
                 TextButton(
                     onClick = { showReconnectCodeDialog = false },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF94A3B8))
+                    colors = ButtonDefaults.textButtonColors(contentColor = TextSecondary)
                 ) {
                     Text("Cancel")
                 }
@@ -631,7 +633,7 @@ private fun InstructionStep(
         Text(
             text = text,
             fontSize = 13.sp,
-            color = Color(0xFFCBD5E1),
+            color = TextSecondary,
             lineHeight = 18.sp
         )
     }
