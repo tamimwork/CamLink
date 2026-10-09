@@ -279,14 +279,17 @@ function createOverlayWindow() {
 }
 
 // Re-validate overlay window position when displays change (monitors plugged / unplugged / resized)
-screen.on('display-metrics-changed', () => {
-  if (overlayWindow && !overlayWindow.isDestroyed()) {
-    const [x, y] = overlayWindow.getPosition();
-    const [w, h] = overlayWindow.getSize();
-    const validated = validateOrClampPosition(x, y, w, h);
-    overlayWindow.setPosition(validated.x, validated.y);
-  }
-});
+// NOTE: the 'screen' module may only be used after the app 'ready' event, so this is registered from whenReady()
+function registerDisplayWatcher() {
+  screen.on('display-metrics-changed', () => {
+    if (overlayWindow && !overlayWindow.isDestroyed()) {
+      const [x, y] = overlayWindow.getPosition();
+      const [w, h] = overlayWindow.getSize();
+      const validated = validateOrClampPosition(x, y, w, h);
+      overlayWindow.setPosition(validated.x, validated.y);
+    }
+  });
+}
 
 // Optional separate face cam popout window (also with setContentProtection)
 function createFaceCamPopoutWindow() {
@@ -407,6 +410,7 @@ function sanitizeOutgoingMessage(msg) {
 
 app.whenReady().then(() => {
   setupAppMenu();
+  registerDisplayWatcher();
   createWindow();
 
   // Initialize HTTPS + WSS Signaling Server
