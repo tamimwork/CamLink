@@ -154,11 +154,15 @@ class ScreenRecorder {
     this.updateTimerDisplay();
   }
 
-  updateTimerDisplay() {
+  getFormattedTime() {
     const hrs = Math.floor(this.elapsedSeconds / 3600).toString().padStart(2, '0');
     const mins = Math.floor((this.elapsedSeconds % 3600) / 60).toString().padStart(2, '0');
     const secs = (this.elapsedSeconds % 60).toString().padStart(2, '0');
-    const formatted = `${hrs}:${mins}:${secs}`;
+    return `${hrs}:${mins}:${secs}`;
+  }
+
+  updateTimerDisplay() {
+    const formatted = this.getFormattedTime();
     if (this.onTimerTick) this.onTimerTick(formatted);
   }
 

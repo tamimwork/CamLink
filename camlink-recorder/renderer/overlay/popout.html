@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CamLink Face Cam Popout</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
+    .popout-container {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .bubble {
+      width: calc(100% - 12px); height: calc(100% - 12px);
+      border-radius: 50%; overflow: hidden;
+      border: 3px solid #00E5FF;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      background: #090D16;
+      cursor: grab;
+      position: relative;
+    }
+    .bubble:active { cursor: grabbing; }
+    .bubble.rounded { border-radius: 24px; }
+    .bubble.rect { border-radius: 8px; }
+    canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .fallback {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: #94A3B8; font-family: sans-serif; font-size: 11px; gap: 6px;
+    }
+    .fallback.hidden { display: none; }
+    .close-btn {
+      position: absolute; top: 8px; right: 8px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(13, 21, 39, 0.85); border: 1px solid #334155;
+      color: #94A3B8; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: 0; transition: opacity 0.15s ease;
+    }
+    .popout-container:hover .close-btn { opacity: 1; }
+    .close-btn:hover { color: #FFF; border-color: #00E5FF; }
+  </style>
+</head>
+<body>
+  <div class="popout-container">
+    <div class="bubble circle" id="popout-bubble">
+      <canvas id="popout-canvas" width="320" height="320"></canvas>
+      <div class="fallback" id="popout-fallback">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span>Face Cam</span>
+      </div>
+    </div>
+    <button class="close-btn" id="btn-close-popout" title="Close Popout">✕</button>
+  </div>
+
+  <script>
+    const bubble = document.getElementById('popout-bubble');
+    const canvas = document.getElementById('popout-canvas');
+    const ctx = canvas.getContext('2d');
+    const fallback = document.getElementById('popout-fallback');
+    const btnClose = document.getElementById('btn-close-popout');
+
+    let isMirrored = true;
+    let isDragging = false;
+    let lastScreenX = 0;
+    let lastScreenY = 0;
+
+    bubble.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      lastScreenX = e.screenX;
+      lastScreenY = e.screenY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.screenX - lastScreenX;
+      const dy = e.screenY - lastScreenY;
+      lastScreenX = e.screenX;
+      lastScreenY = e.screenY;
+      if (window.camlink && window.camlink.moveOverlay) {
+        window.camlink.moveOverlay(dx, dy);
+      }
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    btnClose.addEventListener('click', () => {
+      if (window.camlink && window.camlink.closeFaceCamPopout) {
+        window.camlink.closeFaceCamPopout();
+      }
+    });
+
+    if (window.camlink && window.camlink.onOverlayStateUpdate) {
+      window.camlink.onOverlayStateUpdate((state) => {
+        if (!state) return;
+        if (state.shape) {
+          bubble.className = `bubble ${state.shape}`;
+        }
+        if (state.borderColor) {
+          bubble.style.borderColor = state.borderColor === 'transparent' ? '#334155' : state.borderColor;
+        }
+        if (typeof state.mirror === 'boolean') {
+          isMirrored = state.mirror;
+        }
+      });
+    }
+
+    if (window.camlink && window.camlink.onOverlayFrame) {
+      window.camlink.onOverlayFrame((frameData) => {
+        if (!frameData) return;
+        const img = new Image();
+        img.onload = () => {
+          fallback.classList.add('hidden');
+          ctx.save();
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          if (isMirrored) {
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+          }
+          const cw = canvas.width, ch = canvas.height;
+          const iw = img.width, ih = img.height;
+          const scale = Math.max(cw / iw, ch / ih);
+          const nw = iw * scale, nh = ih * scale;
+          const nx = (cw - nw) / 2, ny = (ch - nh) / 2;
+          ctx.drawImage(img, nx, ny, nw, nh);
+          ctx.restore();
+        };
+        img.src = frameData;
+      });
+    }
+  </script>
+</body>
+</html>

@@ -722,3 +722,330 @@ body {
 .hotkey-tip strong {
   color: var(--muted);
 }
+
+/* ========================================================
+   REMOTE CONTROL & DEVICE TELEMETRY STYLES
+   ======================================================== */
+.telemetry-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.telemetry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.telemetry-title-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.telemetry-device {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.telemetry-badges {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.status-badge.success {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #10B981;
+}
+
+.status-badge.warning {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #F59E0B;
+}
+
+.status-badge.danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #EF4444;
+}
+
+.status-badge.normal {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: rgba(0, 229, 255, 0.3);
+  color: var(--accent);
+}
+
+.status-badge.hidden {
+  display: none !important;
+}
+
+/* Controls Grid */
+.controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-control-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text);
+  text-align: center;
+}
+
+.btn-control-card:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong, #334155);
+  transform: translateY(-1px);
+}
+
+.btn-control-card.active {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.2);
+}
+
+.btn-control-card.active .control-icon {
+  color: var(--accent);
+}
+
+.btn-control-card.active .rc-btn-sub {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.control-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+
+.rc-btn-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rc-btn-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Overlay Launcher Card */
+.overlay-launcher-card {
+  background: linear-gradient(135deg, rgba(13, 21, 39, 0.8) 0%, rgba(19, 30, 54, 0.8) 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.launcher-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.launcher-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.btn-danger-outline {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #EF4444;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger-outline:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #EF4444;
+}
+
+/* PREVIEW QUICK BAR */
+.preview-quick-bar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+  background: rgba(13, 21, 39, 0.85);
+  backdrop-filter: blur(10px);
+  padding: 4px 6px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.btn-quick-pill {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  border-radius: 18px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-quick-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.btn-quick-pill.active {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+.btn-control-card.full-grid {
+  grid-column: 1 / -1;
+}
+
+.audio-status-note {
+  font-size: 11px;
+  color: var(--warn);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+.audio-status-note.hidden {
+  display: none !important;
+}
+
+/* MAC PERMISSION MODAL */
+.mac-permission-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mac-permission-modal.hidden {
+  display: none !important;
+}
+
+.modal-card {
+  width: 440px;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 229, 255, 0.2);
+}
+
+.modal-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.modal-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.modal-actions .btn-primary {
+  flex: 1;
+}
+
+.modal-actions .btn-secondary {
+  flex: 1;
+}
+

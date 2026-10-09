@@ -6,7 +6,10 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac:arm64": "electron-builder --mac --arm64",
+    "dist:mac:x64": "electron-builder --mac --x64"
   },
   "keywords": [
     "screen-recorder",
@@ -66,6 +69,38 @@
     },
     "portable": {
       "artifactName": "CamLink-Recorder-Portable-${version}.${ext}"
+    },
+    "mac": {
+      "icon": "assets/icon.png",
+      "category": "public.app-category.video",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "target": [
+        {
+          "target": "dmg"
+        },
+        {
+          "target": "zip"
+        }
+      ],
+      "artifactName": "CamLink-Recorder-${version}-mac-${arch}.${ext}"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
     }
-  }
+  },
+  "_comment_mac_build": "NOTE: On macOS, ffmpeg-static installs architecture-specific binaries for the host arch. Run 'npm run dist:mac:arm64' on Apple Silicon (arm64) and 'npm run dist:mac:x64' on Intel (x64) machines so each package bundles the correct native binary."
 }

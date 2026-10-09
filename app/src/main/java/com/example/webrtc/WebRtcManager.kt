@@ -428,7 +428,7 @@ class WebRtcManager(
     }
 
     fun setZoom(ratio: Float) {
-        val clamped = ratio.coerceIn(1.0f, 5.0f)
+        val clamped = ratio.coerceAtLeast(1.0f)  // upper bound = camera maxZoom, clamped in StreamSessionManager
         qualityController.setZoom(clamped)
         _currentZoom.value = clamped
     }

@@ -1,0 +1,48 @@
+name: Build macOS Recorder (Apple Silicon + Intel)
+
+# Run from GitHub: Actions > "Build macOS Recorder" > Run workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  mac:
+    name: macOS ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macos-latest is arm64 (Apple Silicon)
+          - arch: arm64
+            runner: macos-latest
+          # macos-15-intel is GitHub's standard Intel x64 runner
+          # (GitHub drops Intel macOS runners after the macOS 15 image retires in Fall 2027)
+          - arch: x64
+            runner: macos-15-intel
+    defaults:
+      run:
+        working-directory: camlink-recorder
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # ffmpeg-static downloads a per-architecture binary, so install on the matching runner
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build macOS app (${{ matrix.arch }})
+        run: npx electron-builder --mac --${{ matrix.arch }} --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CamLink-Recorder-mac-${{ matrix.arch }}
+          path: |
+            camlink-recorder/dist/*.dmg
+            camlink-recorder/dist/*.zip
+          if-no-files-found: error

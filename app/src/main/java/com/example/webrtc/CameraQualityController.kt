@@ -61,7 +61,7 @@ class CameraQualityController(
     }
 
     fun setZoom(ratio: Float): Boolean {
-        currentZoom = ratio.coerceIn(1.0f, 5.0f)
+        currentZoom = ratio.coerceAtLeast(1.0f)
         return updateCaptureSession()
     }
 

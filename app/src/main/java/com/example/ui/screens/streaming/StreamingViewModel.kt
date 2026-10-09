@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.DeviceHealthState
-import com.example.data.DeviceMonitor
 import com.example.data.SettingsRepository
 import com.example.data.model.StreamFps
 import com.example.data.model.StreamResolution
@@ -18,10 +17,9 @@ import org.webrtc.VideoTrack
 
 class StreamingViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val deviceMonitor = DeviceMonitor(application, viewModelScope)
     private val repository = SettingsRepository(application)
 
-    val deviceHealth: StateFlow<DeviceHealthState> = deviceMonitor.healthState
+    val deviceHealth: StateFlow<DeviceHealthState> = StreamSessionManager.latestHealthState
 
     val connectionStatus: StateFlow<RtcConnectionStatus> = StreamSessionManager.connectionStatus
     val sessionDuration: StateFlow<Long> = StreamSessionManager.sessionDurationSeconds
@@ -36,6 +34,9 @@ class StreamingViewModel(application: Application) : AndroidViewModel(applicatio
     val isAfLocked: StateFlow<Boolean> = StreamSessionManager.isAfLocked
     val isAeAwbLocked: StateFlow<Boolean> = StreamSessionManager.isAeAwbLocked
     val currentZoom: StateFlow<Float> = StreamSessionManager.currentZoom
+    val maxZoom: StateFlow<Float> = StreamSessionManager.maxZoom
+    val hasTorch: StateFlow<Boolean> = StreamSessionManager.hasTorch
+    val canFlip: StateFlow<Boolean> = StreamSessionManager.canFlip
 
     val currentResolution: StateFlow<StreamResolution> = StreamSessionManager.activeResolution
     val currentFps: StateFlow<StreamFps> = StreamSessionManager.activeFps

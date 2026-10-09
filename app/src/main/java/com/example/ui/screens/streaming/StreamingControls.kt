@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SettingsRemote
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.VideocamOff
@@ -43,8 +44,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -85,6 +84,9 @@ fun StreamingControlDock(
     isAfLocked: Boolean,
     isAeAwbLocked: Boolean,
     currentZoom: Float,
+    maxZoom: Float = 5.0f,
+    hasTorch: Boolean = true,
+    canFlip: Boolean = true,
     currentResolution: StreamResolution,
     currentFps: StreamFps,
     onSwitchCamera: () -> Unit,
@@ -96,391 +98,483 @@ fun StreamingControlDock(
     onToggleExposureAwbLock: () -> Unit,
     onZoomChange: (Float) -> Unit,
     onChangeQuality: (StreamResolution, StreamFps) -> Unit,
+    onEnterRemoteMode: () -> Unit = {},
     onStopStreaming: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showQualitySheet by remember { mutableStateOf(false) }
-    var showStopConfirmDialog by remember { mutableStateOf(false) }
+    var showStopDialog by remember { mutableStateOf(false) }
     var showZoomSlider by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Zoom Slider Overlay
+        // Expandable Smooth Zoom Slider Bar
         AnimatedVisibility(
             visible = showZoomSlider,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            Row(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(0.92f)
-                    .background(FixedNavySurface.copy(alpha = 0.95f), RoundedCornerShape(20.dp))
-                    .border(1.dp, FixedNavyBorder, RoundedCornerShape(20.dp))
-                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(FixedNavyDark.copy(alpha = 0.9f))
+                    .border(1.dp, FixedNavyBorder, RoundedCornerShape(16.dp))
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Default.ZoomIn,
-                    contentDescription = null,
-                    tint = FixedCyanAccent,
-                    modifier = Modifier.size(20.dp)
-                )
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Zoom Ratio: ${String.format(Locale.US, "%.1fx", currentZoom)}",
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            listOf(1.0f, 2.0f, 3.0f, maxZoom).distinct().filter { it <= maxZoom }.forEach { preset ->
+                                FilterChip(
+                                    selected = (currentZoom == preset),
+                                    onClick = { onZoomChange(preset) },
+                                    label = {
+                                        Text(
+                                            text = "${preset.toInt()}x",
+                                            fontSize = 10.sp
+                                        )
+                                    },
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = FixedCyanAccent,
+                                        selectedLabelColor = FixedNavyDark,
+                                        containerColor = FixedNavySurfaceVariant,
+                                        labelColor = Color.White
+                                    ),
+                                    border = null,
+                                    modifier = Modifier.height(24.dp)
+                                )
+                            }
+                        }
+                    }
 
-                Slider(
-                    value = currentZoom,
-                    onValueChange = onZoomChange,
-                    valueRange = 1.0f..5.0f,
-                    colors = SliderDefaults.colors(
-                        thumbColor = FixedCyanAccent,
-                        activeTrackColor = FixedCyanPrimary,
-                        inactiveTrackColor = FixedNavySurfaceVariant
-                    ),
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag("camera_zoom_slider")
-                )
-
-                Text(
-                    text = String.format(Locale.US, "%.1fx", currentZoom),
-                    color = Color.White,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.width(36.dp)
-                )
-
-                // Quick Reset to 1x
-                if (currentZoom > 1.05f) {
-                    Text(
-                        text = "1x",
-                        color = FixedCyanAccent,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
+                    Slider(
+                        value = currentZoom,
+                        onValueChange = onZoomChange,
+                        valueRange = 1.0f..maxZoom.coerceAtLeast(1.1f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = FixedCyanAccent,
+                            activeTrackColor = FixedCyanAccent,
+                            inactiveTrackColor = FixedNavyBorder
+                        ),
                         modifier = Modifier
-                            .clickable { onZoomChange(1.0f) }
-                            .padding(4.dp)
+                            .fillMaxWidth()
+                            .testTag("stream_zoom_slider")
                     )
                 }
             }
         }
 
-        // Secondary Picture Control Row (AF Lock, AE/AWB Lock, Zoom Toggle)
+        // Secondary controls: AF/AE, Mirror, Zoom Toggle, Quality Settings (Remote Mode lives in the main dock)
         Row(
             modifier = Modifier
-                .background(FixedNavySurface.copy(alpha = 0.88f), RoundedCornerShape(20.dp))
-                .border(1.dp, FixedNavyBorder, RoundedCornerShape(20.dp))
-                .padding(horizontal = 12.dp, vertical = 5.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // AF Lock Chip
-            QualityToggleChip(
+            // AF Lock Pill
+            CompactControlPill(
+                icon = if (isAfLocked) Icons.Default.CenterFocusWeak else Icons.Default.CenterFocusStrong,
                 label = if (isAfLocked) "AF Locked" else "AF Auto",
-                active = isAfLocked,
+                isActive = isAfLocked,
                 activeColor = FixedAmberWarning,
-                icon = if (isAfLocked) Icons.Default.Lock else Icons.Default.CenterFocusStrong,
-                testTag = "toggle_af_lock_button",
-                onClick = onToggleAutoFocusLock
+                onClick = onToggleAutoFocusLock,
+                testTag = "btn_af_lock"
             )
 
-            // AE / AWB Lock Chip
-            QualityToggleChip(
-                label = if (isAeAwbLocked) "AE/AWB Locked" else "AE Auto",
-                active = isAeAwbLocked,
-                activeColor = FixedAmberWarning,
+            // AE / AWB Lock Pill
+            CompactControlPill(
                 icon = if (isAeAwbLocked) Icons.Default.Lock else Icons.Default.LockOpen,
-                testTag = "toggle_ae_lock_button",
-                onClick = onToggleExposureAwbLock
+                label = if (isAeAwbLocked) "AE Locked" else "AE Auto",
+                isActive = isAeAwbLocked,
+                activeColor = FixedAmberWarning,
+                onClick = onToggleExposureAwbLock,
+                testTag = "btn_ae_lock"
             )
 
-            // Zoom Button Toggle
-            QualityToggleChip(
-                label = String.format(Locale.US, "%.1fx", currentZoom),
-                active = showZoomSlider || currentZoom > 1.05f,
+            // Mirror Front Preview Pill
+            CompactControlPill(
+                icon = Icons.Default.Flip,
+                label = if (isMirrored) "Mirrored" else "Mirror",
+                isActive = isMirrored,
                 activeColor = FixedCyanAccent,
+                onClick = onToggleMirror,
+                testTag = "btn_mirror"
+            )
+
+            // Zoom Toggle Pill
+            CompactControlPill(
                 icon = Icons.Default.ZoomIn,
-                testTag = "toggle_zoom_slider_button",
-                onClick = { showZoomSlider = !showZoomSlider }
+                label = String.format(Locale.US, "%.1fx", currentZoom),
+                isActive = showZoomSlider,
+                activeColor = FixedCyanAccent,
+                onClick = { showZoomSlider = !showZoomSlider },
+                testTag = "btn_zoom_toggle"
+            )
+
+            // Quality Format Pill
+            CompactControlPill(
+                icon = Icons.Default.Settings,
+                label = "${currentResolution.height}p",
+                isActive = false,
+                activeColor = FixedCyanAccent,
+                onClick = { showQualitySheet = true },
+                testTag = "btn_quality_sheet"
             )
         }
 
-        // Primary Control Dock
+        // Main Hardware Action Buttons Row: Flip, Mute, Video Pause, Torch, Remote, End
         Row(
             modifier = Modifier
-                .background(FixedNavySurface.copy(alpha = 0.94f), RoundedCornerShape(32.dp))
-                .border(1.dp, FixedNavyBorder, RoundedCornerShape(32.dp))
-                .padding(horizontal = 14.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(24.dp))
+                .background(FixedNavySurfaceVariant.copy(alpha = 0.95f))
+                .border(1.dp, FixedNavyBorder, RoundedCornerShape(24.dp))
+                .padding(vertical = 10.dp, horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Switch Camera
-            ControlButton(
+            // Flip camera lens
+            DockActionButton(
                 icon = Icons.Default.Cameraswitch,
-                contentDescription = "Switch Camera",
-                active = isFrontCamera,
-                activeColor = FixedCyanAccent,
-                testTag = "switch_camera_button",
-                onClick = onSwitchCamera
+                label = if (isFrontCamera) "Front" else "Back",
+                isActive = false,
+                enabled = canFlip,
+                onClick = onSwitchCamera,
+                testTag = "stream_btn_switch_camera"
             )
 
-            // Flashlight / Torch (available on back camera)
-            if (!isFrontCamera) {
-                ControlButton(
-                    icon = if (isTorchOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
-                    contentDescription = "Torch",
-                    active = isTorchOn,
-                    activeColor = FixedAmberWarning,
-                    testTag = "torch_stream_button",
-                    onClick = onToggleTorch
-                )
-            }
-
-            // Mic Mute / Unmute
-            ControlButton(
+            // Mic mute
+            DockActionButton(
                 icon = if (isMicMuted) Icons.Default.MicOff else Icons.Default.Mic,
-                contentDescription = if (isMicMuted) "Unmute Microphone" else "Mute Microphone",
-                active = isMicMuted,
+                label = if (isMicMuted) "Muted" else "Mic ON",
+                isActive = isMicMuted,
                 activeColor = FixedRoseDanger,
-                testTag = "mute_mic_button",
-                onClick = onToggleMute
+                onClick = onToggleMute,
+                testTag = "stream_btn_mute"
             )
 
-            // Video Pause / Resume
-            ControlButton(
+            // Pause video feed
+            DockActionButton(
                 icon = if (isVideoPaused) Icons.Default.VideocamOff else Icons.Default.Videocam,
-                contentDescription = if (isVideoPaused) "Resume Video" else "Pause Video",
-                active = isVideoPaused,
+                label = if (isVideoPaused) "Paused" else "Video",
+                isActive = isVideoPaused,
                 activeColor = FixedRoseDanger,
-                testTag = "pause_video_button",
-                onClick = onToggleVideo
+                onClick = onToggleVideo,
+                testTag = "stream_btn_pause_video"
             )
 
-            // Mirror / Flip
-            ControlButton(
-                icon = Icons.Default.Flip,
-                contentDescription = "Mirror Video",
-                active = isMirrored,
+            // Torch / Flashlight
+            DockActionButton(
+                icon = if (isTorchOn) Icons.Default.FlashOn else Icons.Default.FlashOff,
+                label = if (isTorchOn) "Torch ON" else "Torch",
+                isActive = isTorchOn,
+                activeColor = FixedAmberWarning,
+                enabled = hasTorch,
+                onClick = onToggleTorch,
+                testTag = "stream_btn_torch"
+            )
+
+            // Remote Mode
+            DockActionButton(
+                icon = Icons.Default.SettingsRemote,
+                label = "Remote",
+                isActive = false,
                 activeColor = FixedCyanAccent,
-                testTag = "mirror_video_button",
-                onClick = onToggleMirror
+                onClick = onEnterRemoteMode,
+                testTag = "stream_btn_remote_mode"
             )
 
-            // Quality Settings Button
-            ControlButton(
-                icon = Icons.Default.Settings,
-                contentDescription = "Stream Quality",
-                active = false,
-                testTag = "quality_settings_button",
-                onClick = { showQualitySheet = true }
+            // Stop / Disconnect Button
+            DockActionButton(
+                icon = Icons.Default.Stop,
+                label = "End",
+                isActive = true,
+                activeColor = FixedRoseDanger,
+                onClick = { showStopDialog = true },
+                testTag = "stream_btn_stop"
             )
-
-            // Stop Streaming Button
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(FixedRoseDanger)
-                    .clickable { showStopConfirmDialog = true }
-                    .testTag("stop_streaming_button"),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Stop,
-                    contentDescription = "Stop Streaming",
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
         }
     }
 
-    // Quality Selection Bottom Sheet
-    if (showQualitySheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showQualitySheet = false },
-            sheetState = rememberModalBottomSheetState(),
-            containerColor = FixedNavyDark,
-            contentColor = Color.White
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = "Stream Quality & Camera Settings",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-
-                Text(
-                    text = "Resolution",
-                    fontSize = 14.sp,
-                    color = Color(0xFF94A3B8),
-                    fontWeight = FontWeight.Medium
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    StreamResolution.entries.forEach { res ->
-                        FilterChip(
-                            selected = res == currentResolution,
-                            onClick = { onChangeQuality(res, currentFps) },
-                            label = { Text(res.label) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = FixedCyanAccent,
-                                selectedLabelColor = FixedNavyDark,
-                                containerColor = FixedNavySurfaceVariant,
-                                labelColor = Color.White
-                            )
-                        )
-                    }
-                }
-
-                Text(
-                    text = "Frame Rate (FPS)",
-                    fontSize = 14.sp,
-                    color = Color(0xFF94A3B8),
-                    fontWeight = FontWeight.Medium
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    StreamFps.entries.forEach { fpsOption ->
-                        FilterChip(
-                            selected = fpsOption == currentFps,
-                            onClick = { onChangeQuality(currentResolution, fpsOption) },
-                            label = { Text(fpsOption.label) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = FixedCyanAccent,
-                                selectedLabelColor = FixedNavyDark,
-                                containerColor = FixedNavySurfaceVariant,
-                                labelColor = Color.White
-                            )
-                        )
-                    }
-                }
-
-                TextButton(
-                    onClick = { showQualitySheet = false },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Done", color = FixedCyanPrimary)
-                }
-            }
-        }
-    }
-
-    // Stop Streaming Confirmation Dialog
-    if (showStopConfirmDialog) {
+    // Stop Confirmation Dialog
+    if (showStopDialog) {
         AlertDialog(
-            onDismissRequest = { showStopConfirmDialog = false },
-            containerColor = FixedNavySurface,
+            onDismissRequest = { showStopDialog = false },
             title = {
-                Text(text = "Stop Recording Stream?", color = Color.White, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "End Streaming Session?",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
             },
             text = {
                 Text(
-                    text = "This will immediately disconnect the camera and microphone feed from the PC.",
-                    color = Color(0xFFCBD5E1)
+                    text = "This will disconnect the phone webcam stream from your PC recorder.",
+                    color = Color.LightGray,
+                    fontSize = 14.sp
                 )
             },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        showStopConfirmDialog = false
+                        showStopDialog = false
                         onStopStreaming()
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = FixedRoseDanger)
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = FixedRoseDanger
+                    ),
+                    modifier = Modifier.testTag("dialog_confirm_stop")
                 ) {
-                    Text("Disconnect")
+                    Text("End Session", fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = { showStopConfirmDialog = false },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF94A3B8))
+                    onClick = { showStopDialog = false },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = Color.LightGray
+                    )
                 ) {
                     Text("Cancel")
                 }
-            }
+            },
+            containerColor = FixedNavyDark,
+            shape = RoundedCornerShape(20.dp)
         )
+    }
+
+    // Quality Selection Modal Bottom Sheet
+    if (showQualitySheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showQualitySheet = false },
+            sheetState = rememberModalBottomSheetState(),
+            containerColor = FixedNavySurface
+        ) {
+            QualitySelectionContent(
+                currentRes = currentResolution,
+                currentFps = currentFps,
+                onSelect = { res, fps ->
+                    onChangeQuality(res, fps)
+                    showQualitySheet = false
+                }
+            )
+        }
     }
 }
 
 @Composable
-private fun QualityToggleChip(
+private fun CompactControlPill(
+    icon: ImageVector,
     label: String,
-    active: Boolean,
+    isActive: Boolean,
     activeColor: Color,
-    icon: ImageVector,
-    testTag: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    testTag: String
 ) {
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(if (active) activeColor.copy(alpha = 0.2f) else FixedNavySurfaceVariant)
-            .border(1.dp, if (active) activeColor.copy(alpha = 0.7f) else Color.Transparent, RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .testTag(testTag),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = if (active) activeColor else Color(0xFF94A3B8),
-            modifier = Modifier.size(14.dp)
-        )
-        Text(
-            text = label,
-            fontSize = 11.sp,
-            fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
-            color = if (active) activeColor else Color(0xFFE2E8F0)
-        )
-    }
-}
-
-@Composable
-private fun ControlButton(
-    icon: ImageVector,
-    contentDescription: String,
-    active: Boolean,
-    activeColor: Color = FixedCyanAccent,
-    testTag: String,
-    onClick: () -> Unit
-) {
-    val bg = if (active) activeColor.copy(alpha = 0.2f) else FixedNavySurfaceVariant
-    val tint = if (active) activeColor else Color.White
-
     Box(
         modifier = Modifier
-            .size(42.dp)
-            .clip(CircleShape)
-            .background(bg)
+            .clip(RoundedCornerShape(20.dp))
+            .background(
+                if (isActive) activeColor.copy(alpha = 0.18f)
+                else FixedNavyDark.copy(alpha = 0.75f)
+            )
             .border(
                 1.dp,
-                if (active) activeColor else Color.Transparent,
-                CircleShape
+                if (isActive) activeColor.copy(alpha = 0.8f) else FixedNavyBorder,
+                RoundedCornerShape(20.dp)
             )
             .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 6.dp)
             .testTag(testTag),
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = tint,
-            modifier = Modifier.size(20.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = if (isActive) activeColor else Color.LightGray,
+                modifier = Modifier.size(12.dp)
+            )
+            Text(
+                text = label,
+                fontSize = 10.sp,
+                fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
+                color = if (isActive) activeColor else Color.LightGray
+            )
+        }
+    }
+}
+
+@Composable
+private fun DockActionButton(
+    icon: ImageVector,
+    label: String,
+    isActive: Boolean = false,
+    activeColor: Color = FixedCyanAccent,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+    testTag: String
+) {
+    val alpha = if (enabled) 1.0f else 0.35f
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 2.dp)
+            .testTag(testTag)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(42.dp)
+                .clip(CircleShape)
+                .background(
+                    if (isActive) activeColor.copy(alpha = 0.22f * alpha)
+                    else FixedNavyDark.copy(alpha = 0.8f * alpha)
+                )
+                .border(
+                    1.5.dp,
+                    if (isActive) activeColor.copy(alpha = alpha) else FixedNavyBorder.copy(alpha = alpha),
+                    CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = if (isActive) activeColor.copy(alpha = alpha) else Color.White.copy(alpha = alpha),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        Text(
+            text = label,
+            fontSize = 9.sp,
+            fontWeight = FontWeight.Medium,
+            color = if (isActive) activeColor.copy(alpha = alpha) else Color.LightGray.copy(alpha = alpha)
         )
+    }
+}
+
+@Composable
+private fun QualitySelectionContent(
+    currentRes: StreamResolution,
+    currentFps: StreamFps,
+    onSelect: (StreamResolution, StreamFps) -> Unit
+) {
+    var selectedRes by remember { mutableStateOf(currentRes) }
+    var selectedFps by remember { mutableStateOf(currentFps) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp)
+    ) {
+        Text(
+            text = "Camera Stream Quality",
+            color = Color.White,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        Text(
+            text = "Resolution",
+            color = Color.LightGray,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            StreamResolution.entries.forEach { res ->
+                FilterChip(
+                    selected = selectedRes == res,
+                    onClick = { selectedRes = res },
+                    label = { Text(res.label) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = FixedCyanAccent,
+                        selectedLabelColor = FixedNavyDark,
+                        containerColor = FixedNavySurfaceVariant,
+                        labelColor = Color.White
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        Text(
+            text = "Frame Rate (FPS)",
+            color = Color.LightGray,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            StreamFps.entries.forEach { fps ->
+                FilterChip(
+                    selected = selectedFps == fps,
+                    onClick = { selectedFps = fps },
+                    label = { Text(fps.label) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = FixedCyanAccent,
+                        selectedLabelColor = FixedNavyDark,
+                        containerColor = FixedNavySurfaceVariant,
+                        labelColor = Color.White
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        androidx.compose.material3.Button(
+            onClick = { onSelect(selectedRes, selectedFps) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = FixedCyanAccent,
+                contentColor = FixedNavyDark
+            ),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Text(
+                text = "Apply Quality Settings",
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }

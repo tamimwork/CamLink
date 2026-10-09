@@ -22,5 +22,6 @@ data class StreamSettings(
     val mirrorVideo: Boolean = false,
     val keepScreenOn: Boolean = true,
     val autoReconnect: Boolean = true,
-    val appTheme: String = "dark" // "system", "dark", "light"
+    val appTheme: String = "dark", // "system", "dark", "light"
+    val allowPcControl: Boolean = true
 )

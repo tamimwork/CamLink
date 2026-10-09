@@ -27,6 +27,7 @@ class SettingsRepository(private val context: Context) {
         val KEEP_SCREEN_ON = booleanPreferencesKey("keep_screen_on")
         val AUTO_RECONNECT = booleanPreferencesKey("auto_reconnect")
         val APP_THEME = stringPreferencesKey("app_theme")
+        val ALLOW_PC_CONTROL = booleanPreferencesKey("allow_pc_control")
 
         val LAST_IP = stringPreferencesKey("last_ip")
         val LAST_PORT = intPreferencesKey("last_port")
@@ -49,6 +50,7 @@ class SettingsRepository(private val context: Context) {
         val keepAwake = prefs[PreferencesKeys.KEEP_SCREEN_ON] ?: true
         val autoReconnect = prefs[PreferencesKeys.AUTO_RECONNECT] ?: true
         val theme = prefs[PreferencesKeys.APP_THEME] ?: "dark"
+        val allowPcControl = prefs[PreferencesKeys.ALLOW_PC_CONTROL] ?: true
 
         StreamSettings(
             defaultCamera = camera,
@@ -57,7 +59,8 @@ class SettingsRepository(private val context: Context) {
             mirrorVideo = mirror,
             keepScreenOn = keepAwake,
             autoReconnect = autoReconnect,
-            appTheme = theme
+            appTheme = theme,
+            allowPcControl = allowPcControl
         )
     }
 
@@ -108,6 +111,12 @@ class SettingsRepository(private val context: Context) {
     suspend fun updateAppTheme(theme: String) {
         context.dataStore.edit { prefs ->
             prefs[PreferencesKeys.APP_THEME] = theme
+        }
+    }
+
+    suspend fun updateAllowPcControl(allow: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.ALLOW_PC_CONTROL] = allow
         }
     }
 

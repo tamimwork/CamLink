@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const networkIpSelect = document.getElementById('network-ip-select');
   const pairingCodeLabel = document.getElementById('pairing-code-label');
   const btnNewCode = document.getElementById('btn-new-code');
+  const firewallHintBox = document.getElementById('firewall-hint-box');
 
   // Diagnostics
   const diagLatency = document.getElementById('diag-latency');
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const bubbleSizeSlider = document.getElementById('bubble-size-slider');
   const bubbleSizeVal = document.getElementById('bubble-size-val');
   const mirrorCheckbox = document.getElementById('mirror-checkbox');
+  const btnFaceCamPopout = document.getElementById('btn-facecam-popout');
 
   // Audio Controls
   const phoneVolumeSlider = document.getElementById('phone-volume-slider');
@@ -35,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnSystemMute = document.getElementById('btn-system-mute');
   const phoneVuBar = document.getElementById('phone-vu-bar');
   const systemVuBar = document.getElementById('system-vu-bar');
+  const systemAudioUnsupportedNote = document.getElementById('system-audio-unsupported-note');
 
   // Recording Controls
   const btnRecord = document.getElementById('btn-record');
@@ -43,10 +46,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   const recordTimer = document.getElementById('record-timer');
   const recDot = document.getElementById('rec-dot');
 
+  // Settings
+  const settingAutoOverlay = document.getElementById('setting-auto-overlay');
+  const settingMinimizeMain = document.getElementById('setting-minimize-main');
+
+  // macOS Permission Modal
+  const macPermissionModal = document.getElementById('mac-permission-modal');
+  const btnOpenMacPrefs = document.getElementById('btn-open-mac-prefs');
+  const btnDismissMacModal = document.getElementById('btn-dismiss-mac-modal');
+
   // Instantiate Modules
   const compositor = new VideoCompositor(canvas, screenVideo, phoneVideo);
   const audioMixer = new AudioMixer();
   const recorder = new ScreenRecorder(canvas, audioMixer);
+  const remoteControls = new RemoteControlsManager({
+    compositor,
+    recorder,
+    audioMixer,
+    phoneVideo
+  });
 
   compositor.start();
   audioMixer.startMeterPolling((phoneLevel, systemLevel) => {
@@ -57,6 +75,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   // WebRTC PeerConnection State
   let peerConnection = null;
   let phoneMediaStream = null;
+
+  // Platform-aware adjustments
+  if (window.camlink && window.camlink.isMac) {
+    if (firewallHintBox) {
+      firewallHintBox.innerHTML = '<strong>macOS & Wi-Fi:</strong> Ensure your iPhone/Android and Mac are connected to the same Wi-Fi. If macOS asks to allow incoming network connections for CamLink Recorder, click <em>Allow</em>.';
+    }
+  }
 
   // Initialize Server Info & QR
   async function refreshServerInfo() {
@@ -181,36 +206,49 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Handle IPC signaling events from phone
   window.camlink.onPhoneConnected((info) => {
     setConnectionStatus(true, info.deviceName);
+    remoteControls.setConnected(true, info.deviceName);
   });
 
   window.camlink.onPhoneDisconnected((reason) => {
     console.log('[WebRTC] Phone disconnected:', reason);
     setConnectionStatus(false);
+    remoteControls.setConnected(false);
     closePeerConnection();
   });
 
   window.camlink.onLatencyUpdate((latencyMs) => {
     diagLatency.textContent = `${latencyMs} ms`;
+    remoteControls.setLatency(latencyMs);
   });
 
   window.camlink.onSignalMessage(async (msg) => {
+    // If msg is state echo, device-state, or battery/status, forward to remoteControls
+    if (msg.type !== 'offer' && msg.type !== 'ice') {
+      remoteControls.handlePhoneMessage(msg);
+      return;
+    }
+
     if (msg.type === 'offer') {
       console.log('[WebRTC] Handling offer from phone');
-      const pc = createPeerConnection();
+      try {
+        const pc = createPeerConnection();
 
-      await pc.setRemoteDescription(new RTCSessionDescription({
-        type: 'offer',
-        sdp: msg.sdp
-      }));
+        await pc.setRemoteDescription(new RTCSessionDescription({
+          type: 'offer',
+          sdp: msg.sdp
+        }));
 
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
 
-      // Reply with answer
-      window.camlink.sendSignalToPhone({
-        type: 'answer',
-        sdp: answer.sdp
-      });
+        // Reply with answer
+        window.camlink.sendSignalToPhone({
+          type: 'answer',
+          sdp: answer.sdp
+        });
+      } catch (err) {
+        console.error('[WebRTC] Failed to handle offer:', err);
+      }
     } else if (msg.type === 'ice') {
       if (peerConnection && msg.candidate) {
         try {
@@ -230,10 +268,37 @@ document.addEventListener('DOMContentLoaded', async () => {
     alert('Server Error: ' + err);
   });
 
+  // Check macOS Screen Recording Permissions
+  async function verifyScreenRecordingPermission() {
+    if (window.camlink && window.camlink.isMac) {
+      const res = await window.camlink.checkScreenRecordingPermission();
+      if (res && res.hasPermission === false) {
+        macPermissionModal.classList.remove('hidden');
+      }
+    }
+  }
+
+  if (btnOpenMacPrefs) {
+    btnOpenMacPrefs.addEventListener('click', () => {
+      window.camlink.openMacScreenRecordingPreferences();
+      macPermissionModal.classList.add('hidden');
+    });
+  }
+
+  if (btnDismissMacModal) {
+    btnDismissMacModal.addEventListener('click', () => {
+      macPermissionModal.classList.add('hidden');
+    });
+  }
+
   // Screen Sources Selection
   async function loadScreenSources() {
     const sources = await window.camlink.getScreenSources();
     sourcesGrid.innerHTML = '';
+
+    if (sources.length === 0 && window.camlink.isMac) {
+      macPermissionModal.classList.remove('hidden');
+    }
 
     sources.forEach((source, index) => {
       const item = document.createElement('div');
@@ -278,8 +343,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       screenVideo.srcObject = stream;
       screenVideo.play();
       audioMixer.setSystemStream(stream);
+
+      // System audio succeeded
+      if (systemAudioUnsupportedNote) systemAudioUnsupportedNote.classList.add('hidden');
+      if (btnSystemMute) {
+        btnSystemMute.disabled = false;
+        btnSystemMute.title = 'Mute System Audio';
+      }
     } catch (err) {
-      console.warn('Could not capture with system audio loopback; retrying video-only:', err);
+      console.warn('System audio loopback not supported or denied; retrying video-only fallback:', err);
       try {
         const videoOnly = await navigator.mediaDevices.getUserMedia({
           audio: false,
@@ -292,6 +364,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         screenVideo.srcObject = videoOnly;
         screenVideo.play();
+
+        // System audio fallback: disable system audio toggle safely with tooltip, never crash
+        if (systemAudioUnsupportedNote) {
+          systemAudioUnsupportedNote.classList.remove('hidden');
+        }
+        if (btnSystemMute) {
+          btnSystemMute.disabled = true;
+          btnSystemMute.title = 'System audio loopback unsupported on this source';
+          btnSystemMute.style.opacity = '0.4';
+        }
+        if (systemVolumeSlider) {
+          systemVolumeSlider.disabled = true;
+          systemVolumeSlider.title = 'System audio unavailable';
+        }
       } catch (e2) {
         console.error('Failed to capture desktop source:', e2);
       }
@@ -318,6 +404,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const shape = btn.dataset.shape;
       compositor.setBubbleShape(shape);
       interactiveBubble.className = `interactive-bubble ${shape}`;
+      remoteControls.syncOverlayState();
     });
   });
 
@@ -335,12 +422,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       const color = btn.dataset.color;
       compositor.setBorderColor(color);
       interactiveBubble.style.borderColor = color === 'transparent' ? 'var(--border-strong)' : color;
+      remoteControls.syncOverlayState();
     });
   });
 
   mirrorCheckbox.addEventListener('change', (e) => {
     compositor.setMirror(e.target.checked);
+    remoteControls.syncOverlayState();
   });
+
+  if (btnFaceCamPopout) {
+    btnFaceCamPopout.addEventListener('click', async () => {
+      if (window.camlink && window.camlink.openFaceCamPopout) {
+        window.camlink.openFaceCamPopout();
+      }
+    });
+  }
 
   // Audio Sliders & Mutes
   phoneVolumeSlider.addEventListener('input', (e) => {
@@ -357,6 +454,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   btnSystemMute.addEventListener('click', () => {
+    if (btnSystemMute.disabled) return;
     const muted = audioMixer.toggleSystemMute();
     btnSystemMute.style.color = muted ? 'var(--danger)' : 'var(--muted)';
   });
@@ -428,7 +526,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scaleX = canvas.width / cRect.width;
     const scaleY = canvas.height / cRect.height;
 
-    const bSize = compositor.bubble.size;
     const mouseCanvasX = (e.clientX - cRect.left) * scaleX;
     const mouseCanvasY = (e.clientY - cRect.top) * scaleY;
 
@@ -445,13 +542,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('resize', updateInteractiveBubbleUI);
 
   // Recorder State Callback
-  recorder.onStateChange = (state) => {
+  let lastRecState = 'inactive';
+  recorder.onStateChange = async (state) => {
+    const prevRecState = lastRecState;
+    lastRecState = state;
     if (state === 'recording') {
       recDot.className = 'rec-dot recording';
       btnRecord.disabled = true;
       btnPause.disabled = false;
       btnStop.disabled = false;
       btnPause.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+
+      // Setting: Show floating controls while recording (default ON)
+      // Only when recording starts from inactive (not when resuming from pause)
+      if (prevRecState === 'inactive' && settingAutoOverlay && settingAutoOverlay.checked) {
+        if (window.camlink && window.camlink.openOverlay) {
+          window.camlink.openOverlay();
+        }
+      }
+
+      // Setting: Minimize main window when recording starts
+      if (settingMinimizeMain && settingMinimizeMain.checked) {
+        // Electron window minimize can be requested via ipc or direct
+        const win = window.camlink;
+        if (win && win.isMac) {
+          // Keep active or minimize
+        }
+      }
     } else if (state === 'paused') {
       recDot.className = 'rec-dot';
       btnPause.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
@@ -460,11 +577,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnRecord.disabled = false;
       btnPause.disabled = true;
       btnStop.disabled = true;
+
+      // When recording stops: auto hide floating controls if setting enabled
+      if (settingAutoOverlay && settingAutoOverlay.checked) {
+        if (window.camlink && window.camlink.closeOverlay) {
+          window.camlink.closeOverlay();
+        }
+      }
     }
+    remoteControls.syncOverlayState();
   };
 
   recorder.onTimerTick = (timeString) => {
     recordTimer.textContent = timeString;
+    remoteControls.syncOverlayState();
   };
 
   // 3-2-1 Countdown & Trigger
@@ -517,8 +643,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Initial loads
+  // Initial setup & verification
   await refreshServerInfo();
+  await verifyScreenRecordingPermission();
   await loadScreenSources();
   setTimeout(updateInteractiveBubbleUI, 200);
+
+  // Platform-specific Hotkey Tips
+  if (window.camlink && window.camlink.isMac) {
+    const tip = document.querySelector('.hotkey-tip');
+    if (tip) {
+      tip.innerHTML = 'Hotkeys: <strong>Cmd+Shift+R</strong> (Rec) | <strong>Cmd+Shift+P</strong> (Pause) | <strong>Cmd+Shift+O</strong> (Overlay) | <strong>Cmd+Shift+F</strong> (Flip) | <strong>Cmd+Shift+M</strong> (Mic)';
+    }
+  }
 });

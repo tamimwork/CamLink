@@ -36,7 +36,8 @@ class SignalingClient(
     private val onIceCandidateReceived: (String, Int, String) -> Unit,
     private val onSessionEnded: (String) -> Unit,
     private val onErrorReceived: (String) -> Unit,
-    private val onLatencyMeasured: ((Long) -> Unit)? = null
+    private val onLatencyMeasured: ((Long) -> Unit)? = null,
+    private val onControlActionReceived: ((action: String, payload: JSONObject) -> Unit)? = null
 ) {
     companion object {
         private const val SIGNAL_TAG = "CamLinkSignal"
@@ -134,9 +135,9 @@ class SignalingClient(
     private fun handleIncomingMessage(text: String, ws: WebSocket) {
         try {
             val json = JSONObject(text)
-            val type = json.optString("type", "").lowercase()
+            val type = json.optString("type", "")
 
-            when (type) {
+            when (type.lowercase()) {
                 "joined" -> {
                     // Code accepted; now create the offer
                     _signalingState.value = SignalingState.Joined
@@ -192,6 +193,17 @@ class SignalingClient(
                     }
                     sendPayload(ws, pong)
                 }
+                "control" -> {
+                    // Shared Protocol: Remote control message from desktop
+                    val action = json.optString("action", "")
+                    if (action.isNotEmpty()) {
+                        onControlActionReceived?.invoke(action, json)
+                    }
+                }
+                else -> {
+                    // Unknown types are ignored
+                    Log.d(SIGNAL_TAG, "Ignoring message with unknown type: $type")
+                }
             }
         } catch (e: Exception) {
             Log.e(SIGNAL_TAG, "Error handling message: ${e.message}")
@@ -241,6 +253,35 @@ class SignalingClient(
             sendPayload(ws, json)
         } else {
             Log.w(SIGNAL_TAG, "Cannot send ice: WebSocket is null")
+        }
+    }
+
+    /**
+     * Sends the complete state snapshot to Desktop as per "Shared Protocol":
+     * {
+     *   "type": "state",
+     *   "facing": "back" | "front",
+     *   "micMuted": Boolean,
+     *   "videoPaused": Boolean,
+     *   "mirrored": Boolean,
+     *   "torch": Boolean,
+     *   "afLocked": Boolean,
+     *   "aeLocked": Boolean,
+     *   "zoom": Float,
+     *   "maxZoom": Float,
+     *   "resolution": String,
+     *   "fps": Int,
+     *   "battery": Int,
+     *   "thermal": String,
+     *   "tempC": Float,
+     *   "hasTorch": Boolean,
+     *   "canFlip": Boolean
+     * }
+     */
+    fun sendState(stateJson: JSONObject) {
+        val ws = webSocket
+        if (ws != null) {
+            sendPayload(ws, stateJson)
         }
     }
 

@@ -16,6 +16,7 @@ class SignalingServer extends EventEmitter {
     this.wss = null;
     this.activeWs = null;
     this.activeDeviceName = null;
+    this.latencyTimer = null;
 
     this.lanIps = this.detectLanIps();
     this.activeIp = this.lanIps[0] || '127.0.0.1';
@@ -208,6 +209,8 @@ class SignalingServer extends EventEmitter {
           console.log(`[CamLinkSignal] Sent to phone: ${joinedReply}`);
           ws.send(joinedReply);
 
+          this.startLatencyPings(ws);
+
           this.emit('phone-connected', {
             deviceName: this.activeDeviceName,
             remoteIp
@@ -218,6 +221,15 @@ class SignalingServer extends EventEmitter {
         if (!isAuthorized) {
           ws.send(JSON.stringify({ type: 'error', reason: 'invalid_code' }));
           ws.close(1008, 'Unauthorized');
+          return;
+        }
+
+        // PC-initiated ping: phone answers with pong {t}; RTT = now - t
+        if (msg.type === 'pong') {
+          if (typeof msg.t === 'number') {
+            const rtt = Date.now() - msg.t;
+            if (rtt >= 0 && rtt < 60000) this.emit('latency-update', rtt);
+          }
           return;
         }
 
@@ -235,8 +247,8 @@ class SignalingServer extends EventEmitter {
           return;
         }
 
-        // 4. Forward offer or ice to renderer process
-        if (msg.type === 'offer' || msg.type === 'ice') {
+        // 4. Forward offer, ice, and remote control / telemetry messages to renderer process
+        if (msg.type !== 'join' && msg.type !== 'ping' && msg.type !== 'leave') {
           this.emit('signal-message', msg);
         }
       } catch (err) {
@@ -258,7 +270,24 @@ class SignalingServer extends EventEmitter {
     });
   }
 
+  startLatencyPings(ws) {
+    this.stopLatencyPings();
+    this.latencyTimer = setInterval(() => {
+      if (this.activeWs === ws && ws.readyState === 1 /* OPEN */) {
+        try { ws.send(JSON.stringify({ type: 'ping', t: Date.now() })); } catch (_) {}
+      }
+    }, 2000);
+  }
+
+  stopLatencyPings() {
+    if (this.latencyTimer) {
+      clearInterval(this.latencyTimer);
+      this.latencyTimer = null;
+    }
+  }
+
   handlePhoneDisconnect(reason) {
+    this.stopLatencyPings();
     this.activeWs = null;
     this.activeDeviceName = null;
     this.emit('phone-disconnected', reason);
@@ -292,6 +321,7 @@ class SignalingServer extends EventEmitter {
         this.sendToPhone({ type: 'bye' });
         this.activeWs.close(1000, 'Code regenerated');
       } catch (_) {}
+      this.stopLatencyPings();
       this.activeWs = null;
       this.activeDeviceName = null;
       this.emit('phone-disconnected', 'Pairing code changed');
@@ -313,6 +343,7 @@ class SignalingServer extends EventEmitter {
   }
 
   stop() {
+    this.stopLatencyPings();
     if (this.activeWs) {
       try {
         this.sendToPhone({ type: 'bye' });

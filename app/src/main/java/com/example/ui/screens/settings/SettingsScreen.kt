@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Sync
+import androidx.compose.material.icons.filled.SettingsRemote
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -252,6 +253,16 @@ fun SettingsScreen(
                 checked = settings.autoReconnect,
                 onCheckedChange = { viewModel.setAutoReconnect(it) },
                 testTag = "settings_auto_reconnect_toggle"
+            )
+
+            // Allow PC to Control Camera
+            SettingsToggleRow(
+                icon = Icons.Default.SettingsRemote,
+                title = "Allow PC to control camera",
+                subtitle = "Enables desktop recorder to remotely change zoom, torch, lenses, and settings",
+                checked = settings.allowPcControl,
+                onCheckedChange = { viewModel.setAllowPcControl(it) },
+                testTag = "settings_allow_pc_control_toggle"
             )
 
             // SECTION: Appearance

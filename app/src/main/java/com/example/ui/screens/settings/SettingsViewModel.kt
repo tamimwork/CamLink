@@ -64,4 +64,10 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             repository.updateAppTheme(theme)
         }
     }
+
+    fun setAllowPcControl(allow: Boolean) {
+        viewModelScope.launch {
+            repository.updateAllowPcControl(allow)
+        }
+    }
 }
